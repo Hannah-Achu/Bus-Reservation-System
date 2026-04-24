@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats - TransitFlow</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <header class="top-nav">
+        <div class="nav-left">
+            <span class="back-arrow" onclick="history.back()">&#8592;</span> 
+            <span class="brand">TransitFlow</span>
+        </div>
+        <div class="user-profile">
+            <span class="user-emoji">👤</span>
+        </div>
+    </header>
+
+    <main class="container">
+    <div class="selection-wrapper">
+        <div class="bus-meta">
+            <h2>Intercity Express</h2>
+            <p>Luxury AC Sleeper • Bus #8821</p>
+        </div>
+
+        <div class="bus-deck">
+            <div class="deck-header">
+                <div class="driver-wrap">
+                    <i class="fas fa-steering-wheel"></i> <span class="steering-icon">⭕</span>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item"><span class="s-box avail"></span> Available</div>
+                <div class="legend-item"><span class="s-box select"></span> Selected</div>
+                <div class="legend-item"><span class="s-box booked"></span> Booked</div>
+            </div>
+
+            <div class="seat-grid">
+                <div class="seat available" onclick="toggleSeat(this)">1</div>
+                <div class="seat available" onclick="toggleSeat(this)">2</div>
+                <div class="aisle-space"></div>
+                <div class="seat booked">3</div>
+                <div class="seat available" onclick="toggleSeat(this)">4</div>
+                
+                <div class="seat available" onclick="toggleSeat(this)">5</div>
+                <div class="seat available" onclick="toggleSeat(this)">6</div>
+                <div class="aisle-space"></div>
+                <div class="seat selected" onclick="toggleSeat(this)">7</div>
+                <div class="seat available" onclick="toggleSeat(this)">8</div>
+            </div>
+        </div>
+
+        <div class="checkout-bar">
+            <div class="price-details">
+                <span>Selected Seat: <strong id="active-seat">7</strong></span>
+                <h3>$45.00</h3>
+            </div>
+            <button class="btn-proceed">Proceed to Pay <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+</main>
+    <script>
+        function toggleSeat(element) {
+            if (element.classList.contains('booked')) return;
+            
+            // Remove selection from others (Single seat selection logic)
+            document.querySelectorAll('.seat.selected').forEach(s => s.classList.remove('selected'));
+            
+            element.classList.toggle('selected');
+            document.getElementById('active-seat').innerText = element.innerText;
+        }
+    </script>
+</body>
+</html>
