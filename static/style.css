@@ -1,0 +1,435 @@
+:root {
+    --accent-orange: #a64d00;
+    --dark-teal: #1a3a3a;
+    --light-bg: #f4f7f6;
+    --text-grey: #666;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--light-bg);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hero {
+    /* ../ moves up to 'static', then we go into 'assets' */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                      url('../assets/bus.jpeg');
+    
+    background-size: cover;      
+    background-position: center; 
+    background-repeat: no-repeat;
+    
+    border-radius: 20px;
+    padding: 100px 20px;         
+    text-align: center;
+    color: white;
+    position: relative;
+    margin-bottom: 60px;
+}
+.search-bar {
+    display: flex;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    color: #333;
+}
+
+.search-input {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+    text-align: left;
+}
+
+.border-left { border-left: 1px solid #ddd; }
+
+.search-input label { font-size: 0.8rem; color: var(--text-grey); margin-bottom: 5px; }
+.search-input input { border: none; font-size: 1rem; outline: none; }
+
+.btn-search {
+    background: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 0 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Bus Cards */
+.bus-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+}
+
+.bus-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.bus-name { font-weight: bold; color: var(--dark-teal); display: block; }
+.bus-type { font-size: 0.75rem; color: var(--text-grey); }
+.price { color: var(--accent-orange); font-weight: bold; font-size: 1.2rem; }
+
+.timeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.duration-line {
+    flex-grow: 1;
+    text-align: center;
+    margin: 0 30px;
+    position: relative;
+}
+
+.line { height: 2px; background: #ddd; width: 100%; margin-top: 5px; }
+
+.btn-select {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--accent-orange);
+    color: var(--accent-orange);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-select:hover {
+    background: var(--accent-orange);
+    color: white;
+}
+.top-nav {
+    display: flex;             /* This aligns items horizontally */
+    justify-content: space-between; /* Pushes brand to left, profile to right */
+    align-items: center;       /* Vertically centers them */
+    padding: 10px 20px;
+    background: white;
+}
+
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;        /* Makes the profile image circular */
+}
+.footer-nav {
+    display: flex;            /* Turns the vertical stack into a horizontal row */
+    justify-content: center;  /* Centers the items */
+    gap: 30px;                /* Adds space between the words */
+    padding: 20px;
+    background: #f8f9fa;
+}
+/* Top Nav Spacing */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Spaces the arrow from the text */
+}
+
+.back-arrow {
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #333;
+}
+
+.user-emoji {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Bottom Bar Spacing & Hover Effect */
+.footer-nav {
+    display: flex;
+    justify-content: space-evenly; /* This spreads them out evenly across the bar */
+    align-items: center;
+    padding: 20px 0;
+    background: #fff;
+    border-top: 1px solid #eee;
+}
+
+.nav-item {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s ease; /* Smooth transition for the glow */
+    border-radius: 8px;
+}
+
+/* The Glow Effect */
+.nav-item:hover {
+    color: #a64d00; /* Your accent orange */
+    background-color: rgba(166, 77, 0, 0.05); /* Very light orange tint */
+    text-shadow: 0 0 8px rgba(166, 77, 0, 0.4); /* The "Glow" effect */
+    transform: translateY(-2px); /* Slight lift for interactivity */
+}
+/* Mobile Responsive Adjustments */
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    .search-bar {
+        flex-direction: column; 
+        width: 95%;
+        bottom: -150px; /* Adjusted to make room for the stack */
+        gap: 10px;
+    }
+
+    .search-input {
+        border-left: none;
+        border-bottom: 1px solid #eee; 
+        padding: 10px 0;
+    }
+
+    .hero {
+        margin-bottom: 180px; /* Increased margin to prevent overlap */
+        padding: 60px 15px;    /* Shorter hero for mobile screens */
+    }
+
+    .btn-search {
+        padding: 15px;
+        width: 100%;
+    }
+}
+/* Seat Selection Specific Styles */
+.bus-container {
+    background: white;
+    max-width: 450px;
+    margin: 20px auto;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.driver-section {
+    text-align: right;
+    margin-bottom: 20px;
+    padding-right: 20px;
+    font-size: 1.5rem;
+}
+
+.legend {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    font-size: 0.85rem;
+    color: var(--text-grey);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Dynamic Grid Logic */
+.seat-grid {
+    display: grid;
+    /* 2 seats - Aisle - 2 seats */
+    grid-template-columns: repeat(2, 1fr) 0.5fr repeat(2, 1fr); 
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+/* If it's a Sleeper Bus, you can change this via a class */
+.sleeper-bus {
+    grid-template-columns: 1fr 0.5fr 1fr; /* 1 seat - Aisle - 1 seat */
+}
+
+.seat {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s all ease;
+}
+
+.seat.available:hover {
+    border-color: var(--accent-orange);
+    background-color: rgba(166, 77, 0, 0.05);
+}
+
+.seat.selected {
+    background-color: var(--accent-orange);
+    color: white;
+    border-color: var(--accent-orange);
+    box-shadow: 0 4px 10px rgba(166, 77, 0, 0.3);
+}
+
+.seat.booked {
+    background-color: #f0f0f0;
+    color: #ccc;
+    border-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+.aisle {
+    width: 20px;
+}
+
+/* Footer Summary */
+.booking-summary {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--dark-teal);
+    margin: 5px 0;
+}
+
+.btn-pay {
+    background: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-pay:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(166, 77, 0, 0.4);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .bus-container {
+        width: 90%;
+        padding: 20px;
+    }
+    .seat {
+        border-radius: 6px;
+        font-size: 0.75rem;
+    }
+}
+:root {
+    --accent-orange: #a64d00;
+    --bg-light: #f8fafc;
+    --border-color: #e2e8f0;
+}
+
+.selection-wrapper {
+    max-width: 600px; /* Better desktop width */
+    margin: 40px auto;
+    padding-bottom: 100px; /* Space for sticky footer */
+}
+
+.bus-deck {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.s-box { 
+    width: 16px; height: 16px; border-radius: 4px; display: inline-block; 
+}
+.s-box.avail { border: 1px solid #ccc; }
+.s-box.select { background: var(--accent-orange); }
+.s-box.booked { background: #e2e8f0; }
+
+/* The Grid Fix */
+.seat-grid {
+    display: grid;
+    /* 2 seats | narrow aisle | 2 seats */
+    grid-template-columns: 60px 60px 30px 60px 60px; 
+    justify-content: center;
+    gap: 15px 10px; /* Vertical gap larger than horizontal */
+}
+
+.seat {
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.seat.selected {
+    background: var(--accent-orange);
+    color: white;
+    border-color: var(--accent-orange);
+    box-shadow: 0 4px 12px rgba(166, 77, 0, 0.3);
+}
+
+/* Bottom Bar Fix */
+.checkout-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+    z-index: 100;
+}
+
+.btn-proceed {
+    background: var(--accent-orange);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}

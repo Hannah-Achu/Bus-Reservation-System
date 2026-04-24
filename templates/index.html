@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransitFlow - Search Journey</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
+</head>
+<body>
+   <header class="top-nav">
+    <div class="nav-left">
+        <span class="back-arrow">&#8592;</span> <span class="brand">TransitFlow</span>
+    </div>
+    <div class="user-profile">
+        <span class="user-emoji">👤</span> </div>
+</header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Your Journey Awaits</h1>
+                <p>Reliable bus travel across the country, booked in seconds.</p>
+            </div>
+            
+            <div class="search-bar">
+                <div class="search-input">
+                    <label><i class="far fa-circle"></i> From</label>
+                    <input type="text" placeholder="New York">
+                </div>
+                <div class="search-input border-left">
+                    <label><i class="fas fa-map-marker-alt"></i> To</label>
+                    <input type="text" placeholder="Destination City">
+                </div>
+                <div class="search-input border-left">
+                    <label><i class="far fa-calendar"></i> Travel Date</label>
+                    <input type="text" placeholder="dd/mm/yyyy">
+                </div>
+                <button class="btn-search">
+                    <i class="fas fa-search"></i> Search Buses
+                </button>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div class="results-header">
+                <h2>Available Buses</h2>
+                <span>3 results found</span>
+            </div>
+
+            <div class="bus-card">
+                <div class="bus-info">
+                    <div class="bus-details">
+                        <span class="bus-name">Intercity Express</span>
+                        <span class="bus-type">AC SLEEPER</span>
+                    </div>
+                    <div class="price">$45.00</div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="time-point">
+                        <strong>08:00 AM</strong>
+                        <span>NYC</span>
+                    </div>
+                    <div class="duration-line">
+                        <span>4h 30m</span>
+                        <div class="line"></div>
+                        <i class="fas fa-bus"></i>
+                    </div>
+                    <div class="time-point">
+                        <strong>12:30 PM</strong>
+                        <span>WDC</span>
+                    </div>
+                </div>
+                <button class="btn-select">Select</button>
+            </div>
+
+            <div class="bus-card">
+                <div class="bus-info">
+                    <div class="bus-details">
+                        <span class="bus-name">Royal Travels</span>
+                        <span class="bus-type">LUXURY MULTI-AXLE</span>
+                    </div>
+                    <div class="price">$55.00</div>
+                </div>
+                <button class="btn-select">Select</button>
+            </div>
+        </section>
+    </main>
+
+  <nav class="footer-nav">
+    <div class="nav-item">Search</div>
+    <div class="nav-item">My Trips</div>
+    <div class="nav-item">Profile</div>
+</nav>
+</body>
+</html>
