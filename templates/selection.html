@@ -5,70 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Seats - TransitFlow</title>
     <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body style="background-color: #f4f7f6; margin: 0; font-family: sans-serif;">
+
     <header class="top-nav">
         <div class="nav-left">
-            <span class="back-arrow" onclick="history.back()">&#8592;</span> 
+            <a href="index.html" class="back-arrow"><i class="fas fa-arrow-left"></i></a> 
             <span class="brand">TransitFlow</span>
         </div>
         <div class="user-profile">
-            <span class="user-emoji">👤</span>
+            <i class="fas fa-user-circle" style="font-size: 1.5rem; color: #1a3a3a;"></i>
         </div>
     </header>
 
     <main class="container">
-    <div class="selection-wrapper">
-        <div class="bus-meta">
-            <h2>Intercity Express</h2>
-            <p>Luxury AC Sleeper • Bus #8821</p>
-        </div>
+        <div class="selection-wrapper">
+            <div class="bus-meta">
+                <h2 style="color: #1a3a3a; margin-bottom: 5px;">Intercity Express</h2>
+                <p style="color: #666; margin: 0;">Luxury AC Sleeper • Bus #8821</p>
+            </div>
 
-        <div class="bus-deck">
-            <div class="deck-header">
-                <div class="driver-wrap">
-                    <i class="fas fa-steering-wheel"></i> <span class="steering-icon">⭕</span>
+            <div class="bus-deck">
+                <div class="deck-header">
+                    <div class="steering-wheel">
+                        <i class="fas fa-dharmachakra"></i> </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item"><span class="s-box avail"></span> Avail.</div>
+                    <div class="legend-item"><span class="s-box select"></span> Select</div>
+                    <div class="legend-item"><span class="s-box booked"></span> Booked</div>
+                </div>
+
+                <div class="seat-grid">
+                    <div class="seat available" onclick="toggleSeat(this)">1</div>
+                    <div class="seat available" onclick="toggleSeat(this)">2</div>
+                    <div class="aisle-space"></div>
+                    <div class="seat booked">3</div>
+                    <div class="seat available" onclick="toggleSeat(this)">4</div>
+                    
+                    <div class="seat available" onclick="toggleSeat(this)">5</div>
+                    <div class="seat available" onclick="toggleSeat(this)">6</div>
+                    <div class="aisle-space"></div>
+                    <div class="seat selected" onclick="toggleSeat(this)">7</div>
+                    <div class="seat available" onclick="toggleSeat(this)">8</div>
+
+                    <div class="seat available" onclick="toggleSeat(this)">9</div>
+                    <div class="seat available" onclick="toggleSeat(this)">10</div>
+                    <div class="aisle-space"></div>
+                    <div class="seat available" onclick="toggleSeat(this)">11</div>
+                    <div class="seat available" onclick="toggleSeat(this)">12</div>
                 </div>
             </div>
-
-            <div class="legend">
-                <div class="legend-item"><span class="s-box avail"></span> Available</div>
-                <div class="legend-item"><span class="s-box select"></span> Selected</div>
-                <div class="legend-item"><span class="s-box booked"></span> Booked</div>
-            </div>
-
-            <div class="seat-grid">
-                <div class="seat available" onclick="toggleSeat(this)">1</div>
-                <div class="seat available" onclick="toggleSeat(this)">2</div>
-                <div class="aisle-space"></div>
-                <div class="seat booked">3</div>
-                <div class="seat available" onclick="toggleSeat(this)">4</div>
-                
-                <div class="seat available" onclick="toggleSeat(this)">5</div>
-                <div class="seat available" onclick="toggleSeat(this)">6</div>
-                <div class="aisle-space"></div>
-                <div class="seat selected" onclick="toggleSeat(this)">7</div>
-                <div class="seat available" onclick="toggleSeat(this)">8</div>
-            </div>
         </div>
+    </main>
 
-        <div class="checkout-bar">
-            <div class="price-details">
-                <span>Selected Seat: <strong id="active-seat">7</strong></span>
-                <h3>$45.00</h3>
-            </div>
-            <button class="btn-proceed">Proceed to Pay <i class="fas fa-arrow-right"></i></button>
+    <div class="checkout-bar">
+        <div class="price-details">
+            <span style="font-size: 0.8rem; color: #666;">Selected Seat: <strong id="active-seat" style="color: #a64d00;">7</strong></span>
+            <h3 style="margin: 5px 0; color: #1a3a3a; font-size: 1.8rem;">$45.00</h3>
         </div>
+        <button class="btn-proceed">Proceed to Pay <i class="fas fa-arrow-right"></i></button>
     </div>
-</main>
+     <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-search"></i><span>Search</span></a>
+        <a href="trips.html" class="nav-item active"><i class="fas fa-ticket-alt"></i><span>My Trips</span></a>
+        <a href="#" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
     <script>
         function toggleSeat(element) {
             if (element.classList.contains('booked')) return;
             
-            // Remove selection from others (Single seat selection logic)
+            // Remove selection from any currently selected seat
             document.querySelectorAll('.seat.selected').forEach(s => s.classList.remove('selected'));
             
-            element.classList.toggle('selected');
+            // Highlight the new seat
+            element.classList.add('selected');
+            
+            // Update the checkout bar text
             document.getElementById('active-seat').innerText = element.innerText;
         }
     </script>

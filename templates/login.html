@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SwiftRide</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="login-page">
+
+    <header class="top-nav">
+        <div class="nav-left">
+            <span class="brand"><i class="fas fa-bus"></i> SwiftRide</span>
+        </div>
+        <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </header>
+
+    <main class="auth-center-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to continue your journey</p>
+            </div>
+
+            <form action="index.html" method="GET">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-envelope"></i>
+                        <input type="email" placeholder="name@example.com" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="label-flex">
+                        <label>Password</label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="••••••••" required>
+                        <i class="far fa-eye toggle-password"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary-login">Sign In</button>
+            </form>
+
+            <p class="signup-footer">
+                Don't have an account? <a href="signup.html">Create Account</a>
+            </p>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item"><i class="fas fa-search"></i><span>Search</span></a>
+        <a href="#" class="nav-item"><i class="fas fa-ticket-alt"></i><span>My Trips</span></a>
+        <a href="#" class="nav-item active"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+</body>
+</html>
