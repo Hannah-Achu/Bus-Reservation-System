@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Trips - TransitFlow</title>
-    <link rel="stylesheet" href="../static/style.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="{{ url_for('static', filename='api.js') }}"></script>
 </head>
 <body class="trips-page">
 
@@ -15,74 +18,117 @@
             <span class="brand">TransitFlow</span>
         </div>
         <div class="user-profile">
-            <img src="https://via.placeholder.com/40" alt="Profile" class="profile-img">
+            <a href="login.html" style="color: inherit;"><i class="fas fa-user-circle" style="font-size: 1.5rem;"></i></a>
         </div>
     </header>
 
     <main class="container">
         <section class="upcoming-trip">
-            <p class="section-label">UPCOMING TRIP</p>
+            <p class="section-label">YOUR BOOKINGS</p>
             <div class="header-flex">
-                <h1 class="main-title">Active Ticket</h1>
-                <button class="download-btn"><i class="fas fa-download"></i> Download</button>
+                <h1 class="main-title">Active Tickets</h1>
             </div>
 
-            <div class="ticket-card">
-                <div class="ticket-top">
-                    <div class="pnr-info">
-                        <span>PNR NUMBER</span>
-                        <h2>TF9428</h2>
-                    </div>
-                    <div class="qr-placeholder">
-                        <i class="fas fa-qrcode"></i>
-                    </div>
-                </div>
-
-                <div class="ticket-journey">
-                    <div class="location">
-                        <span>FROM</span>
-                        <h3>San Francisco</h3>
-                        <p>4th St Terminal</p>
-                    </div>
-                    <div class="bus-icon-wrap">
-                        <i class="fas fa-bus"></i>
-                    </div>
-                    <div class="location text-right">
-                        <span>TO</span>
-                        <h3>Los Angeles</h3>
-                        <p>Union Station</p>
-                    </div>
-                </div>
-
-                <div class="ticket-footer">
-                    <div class="meta-item">
-                        <span>DATE</span>
-                        <p>Oct 24, 2023</p>
-                    </div>
-                    <div class="meta-item text-right">
-                        <span>TIME</span>
-                        <p>08:30 AM</p>
-                    </div>
-                    <div class="meta-item">
-                        <span>SEAT</span>
-                        <p>14A (Window)</p>
-                    </div>
-                    <div class="meta-item text-right">
-                        <span>BUS TYPE</span>
-                        <p>Executive Sleeper</p>
-                    </div>
-                </div>
+            <div id="ticketsContainer">
+                <p style="text-align: center; padding: 20px; color: #666;">Loading your trips...</p>
             </div>
         </section>
-
-        
     </main>
 
     <nav class="bottom-nav">
         <a href="index.html" class="nav-item"><i class="fas fa-search"></i><span>Search</span></a>
         <a href="trips.html" class="nav-item active"><i class="fas fa-ticket-alt"></i><span>My Trips</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="login.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
     </nav>
 
+    <script>
+        window.onload = async () => {
+            const container = document.getElementById('ticketsContainer');
+            
+            try {
+                // 1. Fetch bookings from backend (requires JWT token)
+                const bookings = await myBookings();
+                
+                if (bookings.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px;">
+                            <i class="fas fa-ticket-alt" style="font-size: 3rem; color: #ccc; margin-bottom: 10px;"></i>
+                            <p>No active bookings found.</p>
+                            <a href="index.html" class="btn-primary" style="display: inline-block; margin-top: 10px; text-decoration: none;">Book a Trip</a>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = ''; // Clear loading text
+
+                bookings.forEach(ticket => {
+                    // Create dynamic ticket card
+                    const ticketHTML = `
+                        <div class="ticket-card" id="ticket-${ticket.booking_id}" style="margin-bottom: 20px;">
+                            <div class="ticket-top">
+                                <div class="pnr-info">
+                                    <span>PNR NUMBER</span>
+                                    <h2>${ticket.pnr}</h2>
+                                </div>
+                                <div class="qr-placeholder">
+                                    <i class="fas fa-qrcode"></i>
+                                </div>
+                            </div>
+
+                            <div class="ticket-journey">
+                                <div class="location">
+                                    <span>ROUTE</span>
+                                    <h3>${ticket.route}</h3>
+                                    <p>Bus: ${ticket.bus}</p>
+                                </div>
+                                <div class="bus-icon-wrap">
+                                    <i class="fas fa-bus"></i>
+                                </div>
+                                <div class="location text-right">
+                                    <span>STATUS</span>
+                                    <h3 style="color: #28a745;">Confirmed</h3>
+                                    <p>Fare: ₹${ticket.total_fee}</p>
+                                </div>
+                            </div>
+
+                            <div class="ticket-footer">
+                                <div class="meta-item">
+                                    <span>DATE & TIME</span>
+                                    <p>${new Date(ticket.departure).toLocaleDateString()} | ${new Date(ticket.departure).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                </div>
+                                <div class="meta-item text-right">
+                                    <span>SEAT</span>
+                                    <p>${ticket.seat_no} (${ticket.seat_type})</p>
+                                </div>
+                            </div>
+                            
+                            <button onclick="cancelTrip(${ticket.booking_id})" class="download-btn" style="width: 100%; margin-top: 10px; background-color: #ffebee; color: #c62828; border: none;">
+                                <i class="fas fa-times"></i> Cancel Booking
+                            </button>
+                        </div>
+                    `;
+                    container.innerHTML += ticketHTML;
+                });
+            } catch (err) {
+                console.error("Failed to load trips:", err);
+                container.innerHTML = `
+                    <p style="text-align: center; color: red; padding: 20px;">
+                        Unable to load trips. Please ensure you are <a href="login.html">logged in</a>.
+                    </p>`;
+            }
+        };
+
+        async function cancelTrip(bookingId) {
+            if (!confirm("Are you sure you want to cancel this booking?")) return;
+
+            try {
+                await cancelBooking(bookingId); // Function from api.js
+                alert("Booking cancelled successfully.");
+                location.reload(); // Refresh the list
+            } catch (err) {
+                alert("Cancellation failed: " + (err.error || "Server error"));
+            }
+        }
+    </script>
 </body>
 </html>

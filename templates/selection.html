@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Seats - TransitFlow</title>
-    <link rel="stylesheet" href="../static/style.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="{{ url_for('static', filename='api.js') }}"></script>
 </head>
 <body style="background-color: #f4f7f6; margin: 0; font-family: sans-serif;">
 
     <header class="top-nav">
         <div class="nav-left">
-            <a href="index.html" class="back-arrow"><i class="fas fa-arrow-left"></i></a> 
+            <a href="/index" class="back-arrow"><i class="fas fa-arrow-left"></i></a> 
             <span class="brand">TransitFlow</span>
         </div>
         <div class="user-profile">
@@ -22,14 +25,15 @@
     <main class="container">
         <div class="selection-wrapper">
             <div class="bus-meta">
-                <h2 style="color: #1a3a3a; margin-bottom: 5px;">Intercity Express</h2>
-                <p style="color: #666; margin: 0;">Luxury AC Sleeper • Bus #8821</p>
+                <h2 id="busName" style="color: #1a3a3a; margin-bottom: 5px;">Loading...</h2>
+                <p id="busInfo" style="color: #666; margin: 0;">Please wait while we fetch the layout</p>
             </div>
 
             <div class="bus-deck">
                 <div class="deck-header">
                     <div class="steering-wheel">
-                        <i class="fas fa-dharmachakra"></i> </div>
+                        <i class="fas fa-dharmachakra"></i> 
+                    </div>
                 </div>
 
                 <div class="legend">
@@ -38,24 +42,8 @@
                     <div class="legend-item"><span class="s-box booked"></span> Booked</div>
                 </div>
 
-                <div class="seat-grid">
-                    <div class="seat available" onclick="toggleSeat(this)">1</div>
-                    <div class="seat available" onclick="toggleSeat(this)">2</div>
-                    <div class="aisle-space"></div>
-                    <div class="seat booked">3</div>
-                    <div class="seat available" onclick="toggleSeat(this)">4</div>
-                    
-                    <div class="seat available" onclick="toggleSeat(this)">5</div>
-                    <div class="seat available" onclick="toggleSeat(this)">6</div>
-                    <div class="aisle-space"></div>
-                    <div class="seat selected" onclick="toggleSeat(this)">7</div>
-                    <div class="seat available" onclick="toggleSeat(this)">8</div>
-
-                    <div class="seat available" onclick="toggleSeat(this)">9</div>
-                    <div class="seat available" onclick="toggleSeat(this)">10</div>
-                    <div class="aisle-space"></div>
-                    <div class="seat available" onclick="toggleSeat(this)">11</div>
-                    <div class="seat available" onclick="toggleSeat(this)">12</div>
+                <div class="seat-grid" id="seatGrid">
+                    <p style="grid-column: span 4; text-align: center;">Fetching seats...</p>
                 </div>
             </div>
         </div>
@@ -63,30 +51,103 @@
 
     <div class="checkout-bar">
         <div class="price-details">
-            <span style="font-size: 0.8rem; color: #666;">Selected Seat: <strong id="active-seat" style="color: #a64d00;">7</strong></span>
-            <h3 style="margin: 5px 0; color: #1a3a3a; font-size: 1.8rem;">$45.00</h3>
+            <span style="font-size: 0.8rem; color: #666;">Selected Seat: <strong id="active-seat" style="color: #a64d00;">None</strong></span>
+            <h3 id="fareDisplay" style="margin: 5px 0; color: #1a3a3a; font-size: 1.8rem;">₹0</h3>
         </div>
-        <button class="btn-proceed">Proceed to Pay <i class="fas fa-arrow-right"></i></button>
+        <button class="btn-proceed" id="confirmBtn" disabled>Confirm Booking <i class="fas fa-check-circle"></i></button>
     </div>
-     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item"><i class="fas fa-search"></i><span>Search</span></a>
-        <a href="trips.html" class="nav-item active"><i class="fas fa-ticket-alt"></i><span>My Trips</span></a>
-        <a href="#" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
-    </nav>
 
     <script>
-        function toggleSeat(element) {
-            if (element.classList.contains('booked')) return;
-            
-            // Remove selection from any currently selected seat
+        let selectedSeatId = null;
+        const seatPrice = 500; // Static price for now, can be fetched from schedule
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const scheduleId = urlParams.get('schedule_id');
+        const busId = urlParams.get('bus_id');
+
+        window.onload = async () => {
+            if (!busId || !scheduleId) {
+                alert("Invalid access. Please search for a bus first.");
+                window.location.href = "/index";
+                return;
+            }
+
+            try {
+                const seats = await getSeats(busId);
+                const grid = document.getElementById('seatGrid');
+                grid.innerHTML = ''; 
+
+                seats.forEach((seat, index) => {
+                    const seatDiv = document.createElement('div');
+                    const statusClass = seat.status.toLowerCase(); 
+                    
+                    seatDiv.className = `seat ${statusClass}`;
+                    seatDiv.innerText = seat.seat_no;
+                    
+                    if (seat.restriction !== "None") {
+                        seatDiv.classList.add('restricted');
+                        seatDiv.title = seat.restriction + " only";
+                    }
+
+                    if (statusClass === 'available') {
+                        seatDiv.onclick = () => updateSelection(seatDiv, seat.seat_id);
+                    }
+
+                    grid.appendChild(seatDiv);
+
+                    // Aisle logic for 4-column layout
+                    if ((index + 1) % 2 === 0 && (index + 1) % 4 !== 0) {
+                        const aisle = document.createElement('div');
+                        aisle.className = 'aisle-space';
+                        grid.appendChild(aisle);
+                    }
+                });
+
+                document.getElementById('busName').innerText = "Seat Selection";
+                document.getElementById('busInfo').innerText = "Click on an available seat to book";
+
+            } catch (err) {
+                console.error("Layout failed:", err);
+                alert("Failed to load bus layout.");
+            }
+        };
+
+        // Function to update UI and Price when a seat is clicked
+        function updateSelection(element, seatId) {
+            // Deselect previous
             document.querySelectorAll('.seat.selected').forEach(s => s.classList.remove('selected'));
             
-            // Highlight the new seat
+            // Select new
             element.classList.add('selected');
+            selectedSeatId = seatId;
             
-            // Update the checkout bar text
+            // Update Price and Seat Label
             document.getElementById('active-seat').innerText = element.innerText;
+            document.getElementById('fareDisplay').innerText = `₹${seatPrice}`;
+            
+            // Enable Confirm Button
+            document.getElementById('confirmBtn').disabled = false;
+            document.getElementById('confirmBtn').style.opacity = "1";
         }
+
+        // Handle the Final Confirmation
+        document.getElementById('confirmBtn').addEventListener('click', async () => {
+            if (!selectedSeatId) return;
+
+            try {
+                // Calls bookSeat in api.js which hits /api/bookings/book
+                const result = await bookSeat(scheduleId, selectedSeatId);
+                
+                alert(`Booking Confirmed! PNR: ${result.pnr}`);
+                
+                // Redirect to trips page
+                window.location.href = "/trips";
+
+            } catch (err) {
+                // Handles case where user is not logged in or seat is restricted
+                alert("Booking Failed: " + (err.message || "Please login to book tickets."));
+            }
+        });
     </script>
 </body>
 </html>
