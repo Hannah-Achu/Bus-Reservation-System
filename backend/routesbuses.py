@@ -65,6 +65,17 @@ def get_seats(bus_id):
         "status":      s.seat_status
     } for s in seats])
 
+@buses_bp.route("/schedule/<int:schedule_id>", methods=["GET"])
+def get_schedule(schedule_id):
+    s = Schedule.query.get_or_404(schedule_id)
+    return jsonify({
+        "schedule_id": s.schedule_id,
+        "bus_number":  s.bus.bus_number,
+        "bus_type":    s.bus.bus_type,
+        "route":       s.route.route_name,
+        "departure":   s.departure_time.isoformat(),
+        "fare":        float(s.fare)
+    })
 
 @buses_bp.route("/routes", methods=["GET"])
 def get_routes():
