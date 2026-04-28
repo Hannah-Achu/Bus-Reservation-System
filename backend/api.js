@@ -20,8 +20,9 @@ async function register(name, gender, pwdStatus, email, password, phone) {
 }
 
 async function login(email, password) {
-    const data = await req("/auth/login", "POST", { email, password });
+    const data = await register("/auth/login", "POST", { email, password });
     localStorage.setItem("token", data.access_token);
+    localStorage.setItem("user", JSON.stringify(data.user));
     return data;
 }
 
