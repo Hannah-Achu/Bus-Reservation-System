@@ -19,8 +19,24 @@ def create_app():
 
     @app.route("/")
     def index():
-      return render_template("index.html")
-    
+        return render_template("index.html")
+
+    @app.route("/login")
+    def login_page():
+        return render_template("login.html")
+
+    @app.route("/search")
+    def search_page():
+        return render_template("search.html")
+
+    @app.route("/profile")
+    def profile_page():
+        return render_template("profile.html")
+
+    @app.route("/my-bookings")
+    def my_bookings_page():
+        return render_template("booking.html")
+
     return app
     
 
