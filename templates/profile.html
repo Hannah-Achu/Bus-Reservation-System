@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransitFlow - User Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-[#f8faff] font-sans min-h-screen pb-24">
+
+    <header class="bg-white px-8 py-4 flex justify-between items-center border-b sticky top-0 z-50">
+        <h1 class="text-blue-700 font-bold text-xl">TransitFlow</h1>
+        <div class="flex items-center gap-4">
+            <button onclick="handleLogout()"
+                    class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1 rounded transition">
+                LOGOUT
+            </button>
+            <div class="text-blue-600 text-2xl cursor-pointer">
+                <i class="fa-regular fa-circle-user"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6 md:p-8 space-y-10">
+
+        <!-- User Info Card -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-6">
+            <div class="relative">
+                <img id="avatar" src="" alt="User"
+                     class="w-20 h-20 rounded-full object-cover border-4 border-blue-50">
+                <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
+            </div>
+            <div>
+                <h2 id="user-name" class="text-2xl font-bold text-gray-800">Loading...</h2>
+                <p id="user-email" class="text-sm text-gray-500"></p>
+                <div class="flex gap-2 mt-2">
+                    <span id="user-gender"
+                          class="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-1 rounded uppercase tracking-wider">
+                    </span>
+                    <span id="user-pwd"
+                          class="hidden text-[10px] font-bold bg-purple-50 text-purple-600 px-2 py-1 rounded uppercase tracking-wider">
+                        PWD
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Journey -->
+        <section>
+            <div class="flex justify-between items-end mb-4">
+                <h3 class="font-bold text-gray-800">Upcoming Journey</h3>
+            </div>
+            <!-- Filled dynamically -->
+            <div id="upcoming-booking">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center text-gray-400 text-sm">
+                    Loading...
+                </div>
+            </div>
+        </section>
+
+        <!-- Travel History -->
+        <section class="space-y-4">
+            <h3 class="font-bold text-gray-800">Travel History</h3>
+            <div id="booking-history" class="space-y-4">
+                <div class="text-center text-gray-400 text-sm py-4">Loading...</div>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="bg-white border-t fixed bottom-0 w-full py-3 flex justify-around items-center z-50">
+        <div class="flex flex-col items-center text-gray-400 cursor-pointer hover:text-blue-600 transition"
+             onclick="location.href='/search'">
+            <i class="fa-solid fa-magnifying-glass text-xl"></i>
+            <span class="text-[10px] mt-1">SEARCH</span>
+        </div>
+        <div class="flex flex-col items-center text-blue-600 cursor-pointer">
+            <i class="fa-solid fa-user text-xl"></i>
+            <span class="text-[10px] mt-1 font-bold">PROFILE</span>
+        </div>
+    </nav>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+
+        // ── Redirect to login if not logged in ────────────────────────
+        window.addEventListener("load", () => {
+            if (!getToken()) {
+                window.location.href = "/login";
+                return;
+            }
+            loadProfile();
+            loadBookings();
+        });
+
+        // ── Logout ────────────────────────────────────────────────────
+        function handleLogout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+        }
+
+        // ── Load user info from localStorage (saved during login) ─────
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user) { window.location.href = "/login"; return; }
+
+            document.getElementById("user-name").textContent  = user.name;
+            document.getElementById("user-email").textContent = user.email || "";
+            document.getElementById("user-gender").textContent = user.gender || "";
+            document.getElementById("avatar").src =
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`;
+
+            if (user.pwd_status) {
+                document.getElementById("user-pwd").classList.remove("hidden");
+            }
+        }
+
+        // ── Format date nicely ────────────────────────────────────────
+        function formatDate(isoString) {
+            return new Date(isoString).toLocaleDateString("en-US", {
+                month: "short", day: "numeric", year: "numeric"
+            });
+        }
+
+        // ── Format time only ──────────────────────────────────────────
+        function formatTime(isoString) {
+            return new Date(isoString).toLocaleTimeString("en-US", {
+                hour: "2-digit", minute: "2-digit", hour12: false
+            });
+        }
+
+        // ── Check if journey is upcoming or past ──────────────────────
+        function isUpcoming(isoString) {
+            return new Date(isoString) > new Date();
+        }
+
+        // ── Build upcoming booking card ───────────────────────────────
+        function buildUpcomingCard(booking) {
+            const [origin, destination] = booking.route.split(" - ");
+            return `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-dashed border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-1">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
+                                    Confirmed
+                                </span>
+                                <div class="flex items-center gap-3 text-xl font-bold text-gray-800 mt-2">
+                                    <span>${origin || booking.route}</span>
+                                    <i class="fa-solid fa-arrow-right text-sm text-gray-300"></i>
+                                    <span>${destination || ""}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">PNR</p>
+                                <p class="text-lg font-bold text-blue-700">${booking.pnr}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 p-6 bg-gray-50/50">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Date</p>
+                            <p class="text-sm font-bold text-gray-700">${formatDate(booking.departure)}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Seat</p>
+                            <p class="text-sm font-bold text-gray-700">${booking.seat_no} (${booking.seat_type})</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Boarding</p>
+                            <p class="text-sm font-bold text-gray-700">${formatTime(booking.departure)}</p>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-4 flex justify-between items-center">
+                        <p class="text-xs text-gray-400">Bus: ${booking.bus}</p>
+                        <button onclick="handleCancel(${booking.booking_id})"
+                                class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1 rounded transition">
+                            Cancel Booking
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        // ── Build past booking history card ───────────────────────────
+        function buildHistoryCard(booking) {
+            const isPast      = !isUpcoming(booking.departure);
+            const [origin, destination] = booking.route.split(" - ");
+
+            const iconClass   = isPast
+                ? "fa-solid fa-bus text-gray-400"
+                : "fa-solid fa-circle-xmark text-red-300";
+            const bgClass     = isPast ? "bg-gray-100" : "bg-red-50";
+            const statusText  = isPast ? "Completed" : "Upcoming";
+            const statusColor = isPast ? "text-teal-600" : "text-blue-500";
+
+            return `
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm
+                            flex items-center justify-between hover:border-blue-200 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 ${bgClass} rounded-lg flex items-center justify-center">
+                            <i class="${iconClass}"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">
+                                ${origin || booking.route} to ${destination || ""}
+                            </h4>
+                            <p class="text-xs text-gray-500">
+                                ${formatDate(booking.departure)} • Seat ${booking.seat_no}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold ${statusColor} uppercase">${statusText}</p>
+                        <p class="text-[10px] text-gray-400">₹${booking.total_fee}</p>
+                    </div>
+                </div>`;
+        }
+
+        // ── Load and render all bookings ──────────────────────────────
+        async function loadBookings() {
+            const upcomingDiv = document.getElementById("upcoming-booking");
+            const historyDiv  = document.getElementById("booking-history");
+
+            try {
+                const bookings = await myBookings();   // from api.js
+
+                if (bookings.length === 0) {
+                    upcomingDiv.innerHTML = `
+                        <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+                            <i class="fa-solid fa-ticket text-4xl text-gray-200 mb-3"></i>
+                            <p class="text-gray-400 text-sm">No upcoming journeys</p>
+                            <button onclick="location.href='/search'"
+                                    class="mt-4 text-xs font-bold text-blue-600 hover:underline">
+                                Search Buses →
+                            </button>
+                        </div>`;
+                    historyDiv.innerHTML = `
+                        <p class="text-center text-gray-400 text-sm py-4">No travel history yet.</p>`;
+                    return;
+                }
+
+                // Split into upcoming and past
+                const upcoming = bookings.filter(b => isUpcoming(b.departure));
+                const past     = bookings.filter(b => !isUpcoming(b.departure));
+
+                // Show nearest upcoming booking
+                if (upcoming.length > 0) {
+                    upcomingDiv.innerHTML = buildUpcomingCard(upcoming[0]);
+                } else {
+                    upcomingDiv.innerHTML = `
+                        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center text-gray-400 text-sm">
+                            No upcoming journeys.
+                            <a href="/search" class="text-blue-600 font-bold hover:underline ml-1">Search Buses →</a>
+                        </div>`;
+                }
+
+                // Show past bookings as history
+                if (past.length > 0) {
+                    historyDiv.innerHTML = past.map(b => buildHistoryCard(b)).join("");
+                } else {
+                    historyDiv.innerHTML = `
+                        <p class="text-center text-gray-400 text-sm py-4">No travel history yet.</p>`;
+                }
+
+            } catch (err) {
+                upcomingDiv.innerHTML = `
+                    <p class="text-center text-red-400 text-sm">Failed to load bookings.</p>`;
+            }
+        }
+
+        // ── Cancel a booking ──────────────────────────────────────────
+        async function handleCancel(bookingId) {
+            if (!confirm("Are you sure you want to cancel this booking?")) return;
+            try {
+                await cancelBooking(bookingId);   // from api.js
+                alert("Booking cancelled successfully.");
+                loadBookings();   // refresh
+            } catch (err) {
+                alert("Error: " + (err.error || "Could not cancel booking"));
+            }
+        }
+
+    </script>
+</body>
+</html>

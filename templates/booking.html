@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransitFlow - Booking Confirmed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-[#f0f4f8] font-sans min-h-screen pb-24">
+
+    <header class="bg-white px-8 py-4 flex justify-between items-center border-b sticky top-0 z-50">
+        <h1 class="text-blue-700 font-bold text-xl">TransitFlow</h1>
+        <div class="text-blue-600 text-2xl cursor-pointer" onclick="location.href='/profile'">
+            <i class="fa-regular fa-circle-user"></i>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto p-4 md:p-8 space-y-6">
+
+        <!-- Success Banner -->
+        <div id="success-banner"
+             class="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center gap-4">
+            <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-circle-check text-green-500 text-3xl"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-green-800">Booking Confirmed!</h2>
+                <p class="text-sm text-green-600 mt-1">Your seat has been reserved successfully.</p>
+            </div>
+        </div>
+
+        <!-- Ticket Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+            <!-- Ticket Header -->
+            <div class="bg-blue-700 px-6 py-5 flex justify-between items-center">
+                <div>
+                    <p class="text-blue-200 text-[10px] font-bold uppercase tracking-widest">PNR Number</p>
+                    <p id="ticket-pnr" class="text-white text-3xl font-bold tracking-widest mt-1">------</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-blue-200 text-[10px] font-bold uppercase tracking-widest">Status</p>
+                    <span class="mt-1 inline-block bg-green-400 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        CONFIRMED
+                    </span>
+                </div>
+            </div>
+
+            <!-- Route Section -->
+            <div class="px-6 py-5 border-b border-dashed border-gray-200">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">From</p>
+                        <p id="ticket-origin" class="text-xl font-bold text-gray-800 mt-1">--</p>
+                    </div>
+                    <div class="flex flex-col items-center flex-shrink-0">
+                        <i class="fa-solid fa-bus text-blue-400 text-xl"></i>
+                        <div class="w-24 h-[2px] bg-gray-200 mt-2"></div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">To</p>
+                        <p id="ticket-destination" class="text-xl font-bold text-gray-800 mt-1">--</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journey Details Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-0 divide-x divide-y divide-gray-100">
+                <div class="px-6 py-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Date</p>
+                    <p id="ticket-date" class="text-sm font-bold text-gray-700 mt-1">--</p>
+                </div>
+                <div class="px-6 py-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Departure</p>
+                    <p id="ticket-time" class="text-sm font-bold text-gray-700 mt-1">--</p>
+                </div>
+                <div class="px-6 py-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Seat</p>
+                    <p id="ticket-seat" class="text-sm font-bold text-gray-700 mt-1">--</p>
+                </div>
+                <div class="px-6 py-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Seat Type</p>
+                    <p id="ticket-seat-type" class="text-sm font-bold text-gray-700 mt-1">--</p>
+                </div>
+                <div class="px-6 py-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Bus</p>
+                    <p id="ticket-bus" class="text-sm font-bold text-gray-700 mt-1">--</p>
+                </div>
+                <div class="px-6 py-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Bus Type</p>
+                    <p id="ticket-bus-type" class="text-sm font-bold text-gray-700 mt-1">--</p>
+                </div>
+            </div>
+
+            <!-- Passenger Details -->
+            <div class="px-6 py-4 border-t border-dashed border-gray-200 bg-gray-50">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Passenger</p>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fa-solid fa-user text-blue-500"></i>
+                    </div>
+                    <div>
+                        <p id="ticket-passenger" class="text-sm font-bold text-gray-800">--</p>
+                        <p id="ticket-email" class="text-xs text-gray-400">--</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fare -->
+            <div class="px-6 py-5 flex justify-between items-center border-t border-gray-100">
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Fare</p>
+                    <p id="ticket-fare" class="text-3xl font-bold text-blue-600 mt-1">--</p>
+                </div>
+                <div class="text-right text-xs text-gray-400">
+                    <p>Booking ID: <span id="ticket-booking-id" class="font-bold text-gray-600">--</span></p>
+                    <p class="mt-1">Booked on: <span id="ticket-booked-on" class="font-bold text-gray-600">--</span></p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="location.href='/search'"
+                    class="bg-white border-2 border-blue-600 text-blue-600 font-bold py-3 rounded-xl hover:bg-blue-50 transition">
+                <i class="fa-solid fa-magnifying-glass mr-2"></i>Book Another
+            </button>
+            <button onclick="location.href='/profile'"
+                    class="bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">
+                <i class="fa-solid fa-user mr-2"></i>View Profile
+            </button>
+        </div>
+
+        <!-- All Bookings Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800">All My Bookings</h3>
+                <span id="bookings-count" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="all-bookings" class="divide-y divide-gray-50">
+                <div class="p-6 text-center text-gray-400 text-sm">
+                    <i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Loading bookings...
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <nav class="bg-white border-t fixed bottom-0 w-full py-3 flex justify-around items-center z-50">
+        <div class="flex flex-col items-center text-gray-400 cursor-pointer hover:text-blue-600 transition"
+             onclick="location.href='/search'">
+            <i class="fa-solid fa-magnifying-glass text-xl"></i>
+            <span class="text-[10px] mt-1">SEARCH</span>
+        </div>
+        <div class="flex flex-col items-center text-gray-400 cursor-pointer hover:text-blue-600 transition"
+             onclick="location.href='/profile'">
+            <i class="fa-solid fa-user text-xl"></i>
+            <span class="text-[10px] mt-1">PROFILE</span>
+        </div>
+    </nav>
+
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+    <script>
+
+        // ── Auth check ────────────────────────────────────────────────
+        (function checkAuth() {
+            if (!getToken()) {
+                window.location.href = "/login";
+            }
+        })();
+
+        // ── Read booking data passed from select_seats via URL ────────
+        // URL format: /my-bookings?pnr=548921&booking_id=1
+        const params    = new URLSearchParams(window.location.search);
+        const pnrParam  = params.get("pnr");
+        const bidParam  = params.get("booking_id");
+
+        // ── Load page ─────────────────────────────────────────────────
+        window.addEventListener("load", async () => {
+            loadPassengerInfo();
+
+            if (pnrParam) {
+                await loadTicketByPNR(pnrParam);
+            } else {
+                // No PNR in URL — hide success banner, just show all bookings
+                document.getElementById("success-banner").classList.add("hidden");
+            }
+
+            await loadAllBookings();
+        });
+
+        // ── Fill passenger info from localStorage ─────────────────────
+        function loadPassengerInfo() {
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            document.getElementById("ticket-passenger").textContent = user.name  || "--";
+            document.getElementById("ticket-email").textContent     = user.email || "--";
+        }
+
+        // ── Load the just-confirmed ticket by PNR ─────────────────────
+        async function loadTicketByPNR(pnr) {
+            try {
+                const b = await lookupPNR(pnr);
+                fillTicket(b);
+            } catch (err) {
+                console.error("Could not load ticket:", err);
+            }
+        }
+
+        // ── Fill ticket card with booking data ────────────────────────
+        function fillTicket(b) {
+            const routeParts = b.route ? b.route.split(" - ") : ["--", "--"];
+            const departure  = new Date(b.departure);
+
+            document.getElementById("ticket-pnr").textContent         = b.pnr        || "--";
+            document.getElementById("ticket-origin").textContent      = routeParts[0] || "--";
+            document.getElementById("ticket-destination").textContent = routeParts[1] || "--";
+            document.getElementById("ticket-date").textContent        = departure.toLocaleDateString("en-US", {
+                weekday: "short", year: "numeric", month: "short", day: "numeric"
+            });
+            document.getElementById("ticket-time").textContent        = departure.toLocaleTimeString("en-US", {
+                hour: "2-digit", minute: "2-digit"
+            });
+            document.getElementById("ticket-seat").textContent        = b.seat_no    || b.seat || "--";
+            document.getElementById("ticket-seat-type").textContent   = b.seat_type  || "--";
+            document.getElementById("ticket-bus").textContent         = b.bus        || "--";
+            document.getElementById("ticket-bus-type").textContent    = b.bus_type   || "--";
+            document.getElementById("ticket-fare").textContent        = "Rs." + (b.total_fee || "--");
+            document.getElementById("ticket-booking-id").textContent  = b.booking_id || "--";
+            document.getElementById("ticket-booked-on").textContent   = new Date().toLocaleDateString("en-US", {
+                month: "short", day: "numeric", year: "numeric"
+            });
+        }
+
+        // ── Load all bookings list ─────────────────────────────────────
+        async function loadAllBookings() {
+            const container = document.getElementById("all-bookings");
+            const countEl   = document.getElementById("bookings-count");
+            try {
+                const bookings = await myBookings();
+
+                if (!bookings || bookings.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-6 text-center text-gray-400 text-sm">
+                            No bookings found.
+                        </div>`;
+                    return;
+                }
+
+                countEl.textContent = bookings.length + " booking" + (bookings.length !== 1 ? "s" : "");
+
+                container.innerHTML = bookings.map(function(b) {
+                    var routeParts  = b.route ? b.route.split(" - ") : ["--", "--"];
+                    var departure   = new Date(b.departure);
+                    var isUpcoming  = departure > new Date();
+                    var statusColor = isUpcoming ? "text-blue-500" : "text-teal-500";
+                    var statusText  = isUpcoming ? "Upcoming" : "Completed";
+                    var iconBg      = isUpcoming ? "bg-blue-50" : "bg-gray-100";
+                    var iconColor   = isUpcoming ? "text-blue-400" : "text-gray-400";
+
+                    return "<div class='px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition'>" +
+                        "<div class='flex items-center gap-4'>" +
+                            "<div class='w-10 h-10 " + iconBg + " rounded-lg flex items-center justify-center'>" +
+                                "<i class='fa-solid fa-bus " + iconColor + "'></i>" +
+                            "</div>" +
+                            "<div>" +
+                                "<p class='text-sm font-bold text-gray-800'>" +
+                                    routeParts[0] + " to " + (routeParts[1] || "") +
+                                "</p>" +
+                                "<p class='text-xs text-gray-400 mt-0.5'>" +
+                                    departure.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) +
+                                    " &bull; Seat " + b.seat_no +
+                                "</p>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div class='text-right'>" +
+                            "<p class='text-[10px] font-bold " + statusColor + " uppercase'>" + statusText + "</p>" +
+                            "<p class='text-xs font-bold text-gray-600 mt-0.5'>PNR: " + b.pnr + "</p>" +
+                            "<p class='text-xs text-gray-400'>Rs." + b.total_fee + "</p>" +
+                            (isUpcoming ?
+                                "<button onclick='handleCancel(" + b.booking_id + ")' " +
+                                    "class='mt-1 text-[10px] font-bold text-red-400 hover:text-red-600 transition'>" +
+                                    "Cancel" +
+                                "</button>" : "") +
+                        "</div>" +
+                    "</div>";
+                }).join("");
+
+            } catch (err) {
+                container.innerHTML = "<div class='p-6 text-center text-red-400 text-sm'>" +
+                    (err.error || err.message || "Failed to load bookings") +
+                    "</div>";
+            }
+        }
+
+        // ── Cancel booking ─────────────────────────────────────────────
+        async function handleCancel(bookingId) {
+            if (!confirm("Are you sure you want to cancel this booking?")) return;
+            try {
+                await cancelBooking(bookingId);
+                alert("Booking cancelled successfully.");
+                await loadAllBookings();
+            } catch (err) {
+                alert("Error: " + (err.error || "Could not cancel booking"));
+            }
+        }
+
+    </script>
+</body>
+</html>
