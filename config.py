@@ -11,7 +11,7 @@ class Config:
     # Point to your existing MySQL database
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL",
-        "mysql+pymysql://root:dominion@localhost/BusReservationSystem"
+        "mysql+pymysql://root:password@localhost/BusReservationSystem"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
