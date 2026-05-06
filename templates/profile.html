@@ -50,9 +50,10 @@
         <section>
             <div class="flex justify-between items-end mb-4">
                 <h3 class="font-bold text-gray-800">Upcoming Journey</h3>
+                <span id="upcoming-count" class="text-xs text-gray-400"></span>
             </div>
             <!-- Filled dynamically -->
-            <div id="upcoming-booking">
+            <div id="upcoming-booking" class="space-y-4">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center text-gray-400 text-sm">
                     Loading...
                 </div>
@@ -219,56 +220,72 @@
         }
 
         // ── Load and render all bookings ──────────────────────────────
-        async function loadBookings() {
-            const upcomingDiv = document.getElementById("upcoming-booking");
-            const historyDiv  = document.getElementById("booking-history");
+async function loadBookings() {
+    const upcomingDiv  = document.getElementById("upcoming-booking");
+    const historyDiv   = document.getElementById("booking-history");
+    const countEl      = document.getElementById("upcoming-count");
 
-            try {
-                const bookings = await myBookings();   // from api.js
-
-                if (bookings.length === 0) {
-                    upcomingDiv.innerHTML = `
-                        <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-                            <i class="fa-solid fa-ticket text-4xl text-gray-200 mb-3"></i>
-                            <p class="text-gray-400 text-sm">No upcoming journeys</p>
-                            <button onclick="location.href='/search'"
-                                    class="mt-4 text-xs font-bold text-blue-600 hover:underline">
-                                Search Buses →
-                            </button>
-                        </div>`;
-                    historyDiv.innerHTML = `
-                        <p class="text-center text-gray-400 text-sm py-4">No travel history yet.</p>`;
-                    return;
-                }
-
-                // Split into upcoming and past
-                const upcoming = bookings.filter(b => isUpcoming(b.departure));
-                const past     = bookings.filter(b => !isUpcoming(b.departure));
-
-                // Show nearest upcoming booking
-                if (upcoming.length > 0) {
-                    upcomingDiv.innerHTML = buildUpcomingCard(upcoming[0]);
-                } else {
-                    upcomingDiv.innerHTML = `
-                        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center text-gray-400 text-sm">
-                            No upcoming journeys.
-                            <a href="/search" class="text-blue-600 font-bold hover:underline ml-1">Search Buses →</a>
-                        </div>`;
-                }
-
-                // Show past bookings as history
-                if (past.length > 0) {
-                    historyDiv.innerHTML = past.map(b => buildHistoryCard(b)).join("");
-                } else {
-                    historyDiv.innerHTML = `
-                        <p class="text-center text-gray-400 text-sm py-4">No travel history yet.</p>`;
-                }
-
-            } catch (err) {
-                upcomingDiv.innerHTML = `
-                    <p class="text-center text-red-400 text-sm">Failed to load bookings.</p>`;
-            }
+    try {
+        if (!getToken()) {
+            window.location.href = "/login";
+            return;
         }
+
+        const bookings = await myBookings();
+
+        if (!bookings || bookings.length === 0) {
+            upcomingDiv.innerHTML = `
+                <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+                    <i class="fa-solid fa-ticket text-4xl text-gray-200 mb-3"></i>
+                    <p class="text-gray-400 text-sm">No upcoming journeys</p>
+                    <button onclick="location.href='/search'"
+                            class="mt-4 text-xs font-bold text-blue-600 hover:underline">
+                        Search Buses →
+                    </button>
+                </div>`;
+            historyDiv.innerHTML =
+                "<p class='text-center text-gray-400 text-sm py-4'>No travel history yet.</p>";
+            return;
+        }
+
+        const upcoming = bookings.filter(function(b) { return isUpcoming(b.departure); });
+        const past     = bookings.filter(function(b) { return !isUpcoming(b.departure); });
+
+        // ── Show ALL upcoming bookings ────────────────────────────
+        if (upcoming.length > 0) {
+            countEl.textContent = upcoming.length + " journey" + (upcoming.length !== 1 ? "s" : "");
+            upcomingDiv.innerHTML = upcoming.map(function(b) {
+                return buildUpcomingCard(b);
+            }).join("");
+        } else {
+            countEl.textContent   = "";
+            upcomingDiv.innerHTML =
+                "<div class='bg-white rounded-2xl border border-gray-100 p-6 text-center text-gray-400 text-sm'>" +
+                    "No upcoming journeys. " +
+                    "<a href='/search' class='text-blue-600 font-bold hover:underline'>Search Buses →</a>" +
+                "</div>";
+        }
+
+        // ── Show past bookings as history ─────────────────────────
+        if (past.length > 0) {
+            historyDiv.innerHTML = past.map(function(b) {
+                return buildHistoryCard(b);
+            }).join("");
+        } else {
+            historyDiv.innerHTML =
+                "<p class='text-center text-gray-400 text-sm py-4'>No travel history yet.</p>";
+        }
+
+    } catch (err) {
+        console.error("loadBookings error:", err);
+        upcomingDiv.innerHTML =
+            "<div class='bg-red-50 rounded-2xl border border-red-100 p-6 text-center'>" +
+                "<p class='text-red-400 text-sm'>" + (err.error || err.message || "Could not load bookings") + "</p>" +
+                "<button onclick='loadBookings()' class='mt-3 text-xs font-bold text-blue-600 hover:underline'>Try again</button>" +
+            "</div>";
+        historyDiv.innerHTML = "";
+    }
+}
 
         // ── Cancel a booking ──────────────────────────────────────────
         async function handleCancel(bookingId) {
